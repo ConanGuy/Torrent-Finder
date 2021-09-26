@@ -21,7 +21,7 @@ sitesStructures = {
         "space_string": "%20"
     }}
 
-search = "raid dingue"
+search = input("Rechercher: ")
 
 for site in sitesStructures:
     print(site)
