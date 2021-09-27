@@ -4,28 +4,31 @@ import pandas as pd
 from scraps import *
 from consts import *
 
-results = pd.DataFrame(columns=['title', 'link','size','age','seeds','source','torrent'])
+def main():
+    results = pd.DataFrame(columns=['title', 'link','size','age','seeds','source','torrent'])
+    search = input("Rechercher: ")
 
+    # for site in sitesStructures:
+    for site in SITE_STRUCTURE:
+        print(site)
 
-search = input("Rechercher: ")
+        siteDict = SITE_STRUCTURE[site]
 
-# for site in sitesStructures:
-for site in SITE_STRUCTURE:
-    print(site)
+        url_base = siteDict["url_base"]
+        url_preffix = siteDict["url_preffix"]
+        url_suffix = siteDict["url_suffix"]
+        space_string = siteDict["space_string"]
 
-    siteDict = SITE_STRUCTURE[site]
+        url = url_base+url_preffix+search.replace(" ", space_string)+url_suffix
+        result = requests.get(url)
 
-    url_base = siteDict["url_base"]
-    url_preffix = siteDict["url_preffix"]
-    url_suffix = siteDict["url_suffix"]
-    space_string = siteDict["space_string"]
+        soup = BeautifulSoup(result.content, "lxml")
 
-    url = url_base+url_preffix+search.replace(" ", space_string)+url_suffix
-    result = requests.get(url)
+        for t in eval("scrap_"+site+"(soup, MAX_RESULTS_PER_SITE)"):
+            results = results.append(t, ignore_index=True)
 
-    soup = BeautifulSoup(result.content, "lxml")
+    print(results)
 
-    for t in eval("scrap_"+site+"(soup, MAX_RESULTS_PER_SITE)"):
-        results = results.append(t, ignore_index=True)
-
-print(results)
+if __name__ == "__main__":
+    results = main()
+    print(results)
